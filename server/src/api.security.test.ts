@@ -112,3 +112,70 @@ test("repeated capture returns the known result without calling PayPal", async (
     await stopTestServer(server);
   }
 });
+
+test("capture verifies PayPal capture amount on capture record and marks order paid", async () => {
+  const originalFindOne = Order.findOne;
+  const originalFetch = globalThis.fetch;
+  process.env.PAYPAL_CLIENT_ID ||= "test-client";
+  process.env.PAYPAL_CLIENT_SECRET ||= "test-secret";
+  config.PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
+  config.PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
+
+  const fakeOrder = {
+    id: "507f1f77bcf86cd799439012",
+    userId: { toString: () => "user-a" },
+    total: 25.8,
+    currency: "USD",
+    status: "PENDING_PAYMENT",
+    paymentStatus: "CREATED",
+    stockReserved: false,
+    stockReservedAt: null as Date | null,
+    payment: { providerOrderId: "PP-ORDER-1", captureId: "" },
+    statusHistory: [] as Array<Record<string, unknown>>,
+    save: async () => fakeOrder,
+    toJSON: () => ({ id: fakeOrder.id, status: fakeOrder.status, paymentStatus: fakeOrder.paymentStatus }),
+  };
+
+  Order.findOne = (() => Promise.resolve(fakeOrder)) as unknown as typeof Order.findOne;
+  globalThis.fetch = (async (input: string | URL | Request, init?: RequestInit) => {
+    const url = String(input);
+    if (url.includes("/v1/oauth2/token")) {
+      return new Response(JSON.stringify({ access_token: "pp-token" }), { status: 200, headers: { "Content-Type": "application/json" } });
+    }
+    if (url.includes("/v2/checkout/orders/PP-ORDER-1/capture")) {
+      return new Response(JSON.stringify({
+        id: "PP-ORDER-1",
+        status: "COMPLETED",
+        purchase_units: [{
+          payments: {
+            captures: [{
+              id: "CAP-999",
+              status: "COMPLETED",
+              amount: { currency_code: "USD", value: "25.80" },
+            }],
+          },
+        }],
+      }), { status: 200, headers: { "Content-Type": "application/json" } });
+    }
+    return originalFetch(input, init);
+  }) as typeof fetch;
+
+  const { server, baseUrl } = await startTestServer();
+  try {
+    const response = await fetch(`${baseUrl}/api/payments/paypal/capture`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token("user-a")}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ orderId: "507f1f77bcf86cd799439012" }),
+    });
+    assert.equal(response.status, 200);
+    const body = await response.json() as { captureId: string };
+    assert.equal(body.captureId, "CAP-999");
+    assert.equal(fakeOrder.paymentStatus, "CAPTURED");
+    assert.equal(fakeOrder.status, "PAID");
+    assert.equal(fakeOrder.payment.captureId, "CAP-999");
+  } finally {
+    Order.findOne = originalFindOne;
+    globalThis.fetch = originalFetch;
+    await stopTestServer(server);
+  }
+});

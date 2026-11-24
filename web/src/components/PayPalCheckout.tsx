@@ -29,13 +29,19 @@ export function PayPalCheckout({ orderId, token, providerOrderId, onRefresh }: {
     await window.paypal.Buttons({
       createOrder: async () => providerOrderId,
       onApprove: async () => {
+        setError("");
         const response = await fetch(`${API_URL}/api/payments/paypal/capture`, {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
           body: JSON.stringify({ orderId }),
         });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.message ?? "No se pudo capturar el pago");
+        const data = await response.json().catch(() => ({})) as { message?: string };
+        if (!response.ok) {
+          const message = data.message ?? "No se pudo capturar el pago";
+          setError(message);
+          await onRefresh();
+          return;
+        }
         await onRefresh();
       },
       onCancel: () => {

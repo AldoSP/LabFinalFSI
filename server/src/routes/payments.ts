@@ -45,6 +45,10 @@ router.post("/paypal/order", requireAuth, async (request, response, next) => {
     await releaseExpiredReservation(order);
     const payment = order.payment!;
     if (order.paymentStatus === "CAPTURED") { response.status(409).json({ message: "El pedido ya está pagado" }); return; }
+    if (order.paymentStatus === "FAILED") {
+      payment.providerOrderId = "";
+      order.paymentStatus = "CREATED";
+    }
     if (payment.providerOrderId) {
       response.json({ providerOrderId: payment.providerOrderId });
       return;
@@ -82,13 +86,17 @@ router.post("/paypal/capture", requireAuth, async (request, response, next) => {
     const capture = await capturePayPalOrder(payment.providerOrderId);
     const purchaseUnit = capture.purchase_units?.[0];
     const captureRecord = purchaseUnit?.payments?.captures?.[0];
-    const amountMatches = purchaseUnit?.amount?.value === order.total.toFixed(2) && purchaseUnit.amount.currency_code === order.currency;
+    const capturedAmount = captureRecord?.amount ?? purchaseUnit?.amount;
+    const amountMatches =
+      Number(capturedAmount?.value) === Number(order.total.toFixed(2)) &&
+      capturedAmount?.currency_code === order.currency;
     if (capture.status !== "COMPLETED" || captureRecord?.status !== "COMPLETED" || !amountMatches || !captureRecord.id) {
       if (order.stockReserved) {
         await changeReservedStock(order, 1);
         order.stockReserved = false;
         order.stockReservedAt = null;
       }
+      payment.providerOrderId = "";
       order.paymentStatus = "FAILED";
       await order.save();
       response.status(422).json({ message: "No se pudo verificar el pago" });
