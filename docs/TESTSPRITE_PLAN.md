@@ -1,12 +1,12 @@
 # Plan preparado para TestSprite
 
-## Configuración prevista
+## Configuración utilizada
 
-- Tipo: Live Web App.
+- Tipo: Live Web App (Frontend UI).
 - Proyecto: Lectora.
-- Frontend: URL Railway pública pendiente.
-- Backend: URL Railway pública pendiente.
-- Login: sí, con cuentas de prueba revocables.
+- Frontend: `https://ebook-store-web-production.up.railway.app`
+- Backend: `https://ebook-store-server-production.up.railway.app`
+- Login: sí, con cuenta de prueba revocable.
 - PRD: `PRD.md`.
 
 ## Casos mínimos
@@ -28,13 +28,14 @@
 15. Desconectar red y reconectar; historial se recupera por REST.
 16. Recargar y navegar rutas desplegadas sin errores 404 indebidos.
 
-## Evidencia que debe guardarse
+## Evidencia y resultados registrados
 
-- Fecha y versión desplegada.
-- URLs, navegador y cuentas de prueba ficticias.
-- Capturas/pasos de cada fallo crítico.
-- Pass rate, fallos abiertos, severidad y decisión de liberación.
-- Reproducción manual y commit/revisión de corrección.
-- Ejecución final de regresión.
-
-La evidencia real no puede generarse hasta completar Railway y autorizar TestSprite.
+- **Fecha de ejecución:** 2026-11-24
+- **URL evaluada:** `https://ebook-store-web-production.up.railway.app/#catalogo`
+- **Cobertura alcanzada en TestSprite:** Se completó la exploración inicial guiada por IA antes de que se agotaran los créditos de la cuenta.
+  - Verificó la validación de campo obligatorio (`country`) en el formulario de checkout.
+  - Verificó la redirección hacia la pantalla de inicio de sesión de PayPal Sandbox al iniciar pago (la finalización requiere credenciales de comprador Sandbox).
+  - Verificó el filtro `Ficción`; el agente reportó fallos intermitentes de su herramienta de clic sobre los botones `Tecnología`, `Diseño` y `Ensayo` y al intentar probar checkout como invitado, deteniéndose antes de completar `Run All` por límite de créditos.
+- **Validación complementaria ejecutada:**
+  - `npm run test` en `server`: 10/10 pruebas aprobadas (incluyendo regresión para captura PayPal Orders v2).
+  - Verificación manual en Railway: catálogo, checkout, captura PayPal Sandbox y estado `PAID`.

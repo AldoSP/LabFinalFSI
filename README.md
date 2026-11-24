@@ -73,7 +73,7 @@ npm run seed -w server
 npm run test
 ```
 
-La suite actual contiene 9 pruebas ejecutables para `/health`, 404, autenticación, roles, cantidades inválidas, propiedad, precio autoritativo, idempotencia y transiciones. Las pruebas de infraestructura con MongoDB, PayPal y TestSprite requieren las cuentas/variables de sus servicios.
+La suite actual contiene 10 pruebas ejecutables para `/health`, 404, autenticación, roles, cantidades inválidas, propiedad, precio autoritativo, idempotencia, captura PayPal v2 y transiciones. Las pruebas de infraestructura con MongoDB, PayPal y TestSprite requieren las cuentas/variables de sus servicios.
 
 ## Despliegue Railway
 
@@ -93,4 +93,3 @@ Ambos deben exponer HTTPS. Configura `CLIENT_ORIGIN` con la URL exacta de fronte
 - [docs/TESTSPRITE_PLAN.md](docs/TESTSPRITE_PLAN.md)
 - [docs/REFLECTION.md](docs/REFLECTION.md)
 - [docs/RESULTS.md](docs/RESULTS.md)
-- [Guia_Laboratorio_PlatoYa.md](Guia_Laboratorio_PlatoYa.md)
