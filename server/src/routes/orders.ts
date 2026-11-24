@@ -9,11 +9,11 @@ import { canTransition } from "../services/orderState.js";
 
 const router = Router();
 const createOrderSchema = z.object({
-  items: z.array(z.object({ bookId: z.string(), quantity: z.number().int().positive().max(10) })).min(1).max(30),
+  items: z.array(z.object({ bookId: z.string().min(1), quantity: z.number().int().positive().max(10) })).min(1).max(30),
   delivery: z.object({
-    email: z.email(),
+    email: z.string().trim().pipe(z.email()),
     country: z.string().trim().min(2).max(80),
-    notes: z.string().max(500).default(""),
+    notes: z.string().trim().max(500).optional().default(""),
   }),
 });
 

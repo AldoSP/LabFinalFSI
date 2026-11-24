@@ -8,10 +8,10 @@ import { User } from "../models/User.js";
 const router = Router();
 const registerSchema = z.object({
   name: z.string().trim().min(2).max(100),
-  email: z.email().transform((value) => value.toLowerCase()),
+  email: z.string().trim().pipe(z.email()).transform((value) => value.toLowerCase()),
   password: z.string().min(8).max(128),
 });
-const loginSchema = z.object({ email: z.email(), password: z.string().min(1) });
+const loginSchema = z.object({ email: z.string().trim().pipe(z.email()), password: z.string().min(1) });
 
 router.post("/register", async (request, response, next) => {
   try {

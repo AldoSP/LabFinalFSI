@@ -23,6 +23,12 @@ export async function api<T>(path: string, options: RequestInit = {}) {
     headers: { "Content-Type": "application/json", ...options.headers },
   });
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data.message ?? "No se pudo completar la operación");
+  if (!response.ok) {
+    const issues = Array.isArray(data.issues) ? data.issues as Array<{ path?: string; message?: string }> : [];
+    const detail = issues.length > 0
+      ? `: ${issues.map((issue) => `${issue.path ? `${issue.path}: ` : ""}${issue.message ?? ""}`).join(", ")}`
+      : "";
+    throw new Error(`${data.message ?? "No se pudo completar la operación"}${detail}`);
+  }
   return data as T;
 }

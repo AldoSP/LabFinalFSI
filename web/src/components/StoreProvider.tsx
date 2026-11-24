@@ -39,13 +39,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   function addToCart(book: Book) {
     setCart((current) => {
       const existing = current.find((item) => item.book._id === book._id);
-      if (existing) return current.map((item) => item.book._id === book._id ? { ...item, quantity: Math.min(item.quantity + 1, book.stock) } : item);
+      const maxQuantity = Math.min(book.stock, 10);
+      if (existing) return current.map((item) => item.book._id === book._id ? { ...item, quantity: Math.min(item.quantity + 1, maxQuantity) } : item);
       return [...current, { book, quantity: 1 }];
     });
   }
 
   function setQuantity(bookId: string, quantity: number) {
-    setCart((current) => quantity <= 0 ? current.filter((item) => item.book._id !== bookId) : current.map((item) => item.book._id === bookId ? { ...item, quantity: Math.min(quantity, item.book.stock) } : item));
+    setCart((current) => quantity <= 0 ? current.filter((item) => item.book._id !== bookId) : current.map((item) => item.book._id === bookId ? { ...item, quantity: Math.min(quantity, Math.min(item.book.stock, 10)) } : item));
   }
 
   return <StoreContext.Provider value={{ cart, addToCart, setQuantity, clearCart: () => setCart([]), session, setSession, cartCount: cart.reduce((sum, item) => sum + item.quantity, 0), subtotal: cart.reduce((sum, item) => sum + item.book.price * item.quantity, 0) }}>{children}</StoreContext.Provider>;
