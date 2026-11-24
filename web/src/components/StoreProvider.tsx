@@ -25,7 +25,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     const savedSession = localStorage.getItem("ebook-store-session");
     const savedCart = localStorage.getItem("ebook-store-cart");
     if (savedSession) updateSession(JSON.parse(savedSession) as Session);
-    if (savedCart) setCart(JSON.parse(savedCart) as CartItem[]);
+    if (savedCart) {
+      const parsed = JSON.parse(savedCart) as CartItem[];
+      setCart(parsed.map((item) => ({
+        ...item,
+        quantity: Math.min(Math.max(1, item.quantity), Math.min(item.book.stock, 10)),
+      })));
+    }
   }, []);
 
   useEffect(() => { localStorage.setItem("ebook-store-cart", JSON.stringify(cart)); }, [cart]);

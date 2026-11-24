@@ -9,7 +9,10 @@ import { canTransition } from "../services/orderState.js";
 
 const router = Router();
 const createOrderSchema = z.object({
-  items: z.array(z.object({ bookId: z.string().min(1), quantity: z.number().int().positive().max(10) })).min(1).max(30),
+  items: z.array(z.object({
+    bookId: z.string().min(1),
+    quantity: z.number().int().positive("La cantidad debe ser al menos 1").max(10, "La cantidad máxima por título es 10"),
+  })).min(1).max(30),
   delivery: z.object({
     email: z.string().trim().pipe(z.email()),
     country: z.string().trim().min(2).max(80),
