@@ -15,9 +15,9 @@ Revisión estática de autenticación, autorización, confianza en precios, PayP
 - Capturas repetidas devuelven la captura ya conocida.
 - Stock se reserva condicionalmente y se libera en cancelación, fallo o expiración de 15 minutos.
 - Salas Socket.IO derivan de identidad validada y no de datos del navegador.
-- CORS permite el origen configurado, no cualquier origen.
+- CORS permite el origen configurado, no cualquier origen (normalizando barras finales), y Express configura `trust proxy` para operar correctamente detrás del proxy de Railway con `express-rate-limit`.
 - Zod limita datos y Express controla errores sin revelar secretos.
-- Se excluyen `.env`, `node_modules`, `.next` y `dist` mediante `.gitignore`.
+- Se excluyen `.env`, `.env.*` (excepto `.env.example`), `node_modules`, `.next` y `dist` mediante `.gitignore`.
 
 ## Hallazgos y riesgos residuales
 

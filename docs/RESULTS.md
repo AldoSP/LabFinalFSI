@@ -2,7 +2,7 @@
 
 ## Estado actual
 
-La aplicación está implementada como un monorepo con Next.js y Express/TypeScript. El repositorio Git está inicializado; el estudiante aún debe revisar, añadir y confirmar el commit inicial.
+La aplicación está implementada como un monorepo con Next.js y Express/TypeScript. El repositorio Git tiene el commit inicial (`092282f`) vinculado al remoto `https://github.com/AldoSP/LabFinalFSI`, y las credenciales locales de MongoDB Atlas y PayPal Sandbox ya están configuradas en `server/.env` y `web/.env.local` (excluidos de Git).
 
 ## Cobertura de la guía
 
@@ -12,22 +12,33 @@ La aplicación está implementada como un monorepo con Next.js y Express/TypeScr
 - Catálogo, carrito, stock, checkout, pedidos y envío/entrega digital.
 - PayPal Sandbox con creación y captura backend.
 - Panel administrativo y Socket.IO autenticado.
-- Railway preparado mediante scripts `build`/`start`.
+- Railway preparado mediante scripts `build`/`start`, enlace en `0.0.0.0`, `trust proxy` y normalización de URLs.
 - 9 pruebas ejecutables para salud, 404, autenticación, roles, validación, propiedad, precio autoritativo, idempotencia y estados.
 - Contrato de API, auditoría local, plan TestSprite y plantilla de reflexión individual.
 - Catálogo sin datos ficticios comprables cuando backend falla y reintento de pago después de cancelación.
 - Expiración de reservas de stock a los 15 minutos al reanudar checkout/captura.
 
-## Pendiente de infraestructura externa
+## Despliegue en Railway (pendiente de completar URLs)
 
-- Crear clúster/cuenta MongoDB y cargar credenciales locales/Railway.
-- Crear aplicación PayPal Sandbox y cargar Client ID/Secret.
-- Ejecutar seed con cuenta administradora dedicada.
-- Crear servicios Railway y completar variables/dominios.
-- Ejecutar TestSprite contra URLs desplegadas.
-- Capturar evidencia de pruebas y resultados reales.
-- Añadir y confirmar el commit inicial del repositorio Git.
-- Completar la reflexión individual en `REFLECTION.md`.
+- **Frontend (Next.js):** _Pendiente de pegar URL pública HTTPS de Railway_
+- **Backend (Express + Socket.IO):** _Pendiente de pegar URL pública HTTPS de Railway_
+- **Health check:** _`<BACKEND_URL>/health`_
+
+## Resultados de pruebas TestSprite (pendiente de ejecución)
+
+- **Fecha de ejecución:** _Pendiente_
+- **Suite / tipo:** Live Web App (Frontend UI)
+- **Casos totales / aprobados / fallidos:** _Pendiente_
+- **Defectos encontrados y corregidos:** _Pendiente_
+- **Decisión de liberación:** _Pendiente_
+
+## Pendiente por acción manual del estudiante
+
+- Hacer `git push` de los últimos ajustes al repositorio remoto.
+- Crear y desplegar los servicios `server` y `web` en Railway y configurar sus variables de entorno.
+- Verificar `/health`, MongoDB Atlas Network Access, pago PayPal Sandbox y Socket.IO (WSS) en producción.
+- Ejecutar la suite de TestSprite contra la URL desplegada y registrar la evidencia real en esta sección y en `docs/TESTSPRITE_PLAN.md`.
+- Completar la reflexión individual en `docs/REFLECTION.md`.
 
 ## Limitaciones conocidas
 

@@ -4,7 +4,7 @@ import { z } from "zod";
 const schema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   PORT: z.coerce.number().int().positive().default(4000),
-  CLIENT_ORIGIN: z.string().url().default("http://localhost:3000"),
+  CLIENT_ORIGIN: z.string().url().default("http://localhost:3000").transform((value) => value.replace(/\/+$/, "")),
   MONGODB_URI: z.string().min(1).default("mongodb://127.0.0.1:27017/ebook-store"),
   JWT_SECRET: z.string().min(32).default("development-only-secret-change-before-deploy-2026"),
   PAYPAL_CLIENT_ID: z.string().default(""),
